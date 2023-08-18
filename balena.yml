@@ -45,11 +45,11 @@ post-provisioning: >-
 
   - CHIRPSTACK_MQTT_PWD: The MQTT chirpstack user password you chose in the step above
 
-  - INTEGRATION**MQTT**AUTH**GENERIC**PASSWORD: The MQTT chirpstack user password you chose in the step above
+  - INTEGRATION__MQTT__AUTH__GENERIC__PASSWORD: The MQTT chirpstack user password you chose in the step above
 
   ## Switching between the MobiusFlow UI and the Chirpstack UI
 
-  The MobiusFlow UI is served locally on port 80 and the Chirpstack UI is served locally on port 8080.
+  The MobiusFlow UI is served locally on port 8090 and the Chirpstack UI is served locally on port 8091.
 
   When using the Balena public device URL you can only view one UI at a time. This is a Balena limitation. It is however possible to switch between the MobiusFlow and Chirpstack UIs by overriding the NGINX_UI_CONTAINER device variable. The settings are:
 
