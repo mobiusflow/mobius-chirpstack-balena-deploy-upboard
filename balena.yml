@@ -23,11 +23,49 @@ post-provisioning: >-
 
   ## Setting up Your Device
 
-  After deploying MobiusFlow® to your device, override the following device variables:
+  ### MobiusFlow®
+
+  After deploying MobiusFlow to your device, override the following device variables:
 
   - MOBIUS_HUB_ID: 000001 (the MobiusFlow® hub ID for this device)
 
-  - MOBIUS_LICENCE = <replace with your licence code>
+  - MOBIUS_LICENCE = {replace with your licence code}
+
+  ### Chirpstack
+
+  Create an MQTT broker service in MobiusFlow with the following settings
+
+  - TCP Port: 1883
+
+  - Security: Require Username and Password
+
+  - Add a user with name 'chirpstack' and your own secret password
+
+  Override the following device variables:
+
+  - CHIRPSTACK_MQTT_PWD: The MQTT chirpstack user password you chose in the step above
+
+  - INTEGRATION**MQTT**AUTH**GENERIC**PASSWORD: The MQTT chirpstack user password you chose in the step above
+
+  ## Switching between the MobiusFlow UI and the Chirpstack UI
+
+  The MobiusFlow UI is served locally on port 80 and the Chirpstack UI is served locally on port 8080.
+
+  When using the Balena public device URL you can only view one UI at a time. This is a Balena limitation. It is however possible to switch between the MobiusFlow and Chirpstack UIs by overriding the NGINX_UI_CONTAINER device variable. The settings are:
+
+  - mobius:80 for the MobiusFlow UI
+
+  - chirpstack:8080 for the Chirpstack UI
+
+  It is recommended that you delete this variable from the fleet device variables and add it to each device but only to the nginx service. This will stop all services from restarting when you change it
+
+  ## Chirpstack configuration files
+
+  The chirpstack configuration files (chirpstack service and chirpstack-gateway-bridge service) for can be modified by hand if required. They are located as shown below:
+
+  - chirpstack service: /etc/chirpstack
+
+  - chirpstack-gateway-service: /etc/chirpstack-gateway-bridge
 
 assets:
   repository:
