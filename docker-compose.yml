@@ -1,0 +1,124 @@
+version: "2"
+volumes:
+  resin-data:
+  mobius-licence:
+  mongodb:
+  postgresqldata:
+  redisdata:
+  chirpstack-config:
+  gateway-bridge-config:
+
+services:
+  mobius:
+    image: ghcr.io/mobiusflow/balena_up_mobiusflow-le:1.19.0_1.19.0
+    privileged: true
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+      - 502:502
+      - 1883:1883
+      - 8443:8443
+      - 4840:4840
+      - 8883:8883
+      - 10502:10502
+      - 10001:10001
+      - 30815:30815
+      - 30883:30883
+    volumes:
+      - resin-data:/data
+      - mobius-licence:/.licence
+    labels:
+      io.resin.features.supervisor-api: "1"
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    privileged: false
+    restart: always
+    ports:
+      - 80:80
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+
+  manage:
+    image: ghcr.io/mobiusflow/balena_up_manage:1.19.0
+    privileged: true
+    network_mode: host
+    restart: always
+    volumes:
+      - resin-data:/data
+    labels:
+      io.resin.features.dbus: "1"
+      io.resin.features.supervisor-api: "1"
+
+  mongodb:
+    image: bitnami/mongodb:4.4
+    container_name: mongodb
+    restart: always
+    environment:
+      - MONGODB_ROOT_PASSWORD=r5DybE57qug3WaHebeUy2bAvvVhKXUWHD
+      - MONGODB_USERNAME=mobius
+      - MONGODB_PASSWORD=RmzsXQYReLHaCS5wWGjAPjtJ7VnTw4qL
+      - MONGODB_DATABASE=mobius
+    volumes:
+      - mongodb:/bitnami/mongodb
+    logging:
+      driver: none
+
+  chirpstack:
+    build: ./chirpstack/chirpstack
+    container_name: chirpstack
+    command: -c /etc/chirpstack
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - mobius
+      - redis
+    environment:
+      - MQTT_BROKER_HOST=mobius
+      - REDIS_HOST=redis
+      - POSTGRESQL_HOST=postgres
+    ports:
+      - 8080:8080
+    volumes:
+      - chirpstack-config:/etc/chirpstack
+
+  chirpstack-gateway-bridge:
+    build: ./chirpstack/gateway-bridge
+    container_name: chirpstack-gateway-bridge
+    restart: unless-stopped
+    ports:
+      - 1700:1700/udp
+    volumes:
+      - gateway-bridge-config:/etc/chirpstack-gateway-bridge
+    depends_on: 
+      - mobius
+
+  # chirpstack-rest-api:
+  #   image: chirpstack/chirpstack-rest-api:4
+  #   restart: unless-stopped
+  #   command: --server chirpstack:8080 --bind 0.0.0.0:8090 --insecure
+  #   ports:
+  #     - 8090:8090
+  #   depends_on:
+  #     - chirpstack
+
+  postgres:
+    build: ./chirpstack/postgres
+    container_name: postgres
+    restart: unless-stopped
+    volumes:
+      - postgresqldata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=root
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data

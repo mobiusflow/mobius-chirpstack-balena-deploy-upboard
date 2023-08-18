@@ -1,0 +1,72 @@
+name: Build and Publish
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+env:
+  REGISTRY: ghcr.io
+  BALENA_APP_NAME: MobiusFlow-UP
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get tag
+        id: source_tag
+        run: |
+          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Get build package version
+        id: source_ver
+        run: echo "SOURCE_VER=v$(grep version balena.yml | sed -n 's/^.*"\([0-9][^"]*\)".*$/\1/p')" >> $GITHUB_OUTPUT
+
+      - name: Do tag and version match?
+        if: steps.source_tag.outputs.SOURCE_TAG != steps.source_ver.outputs.SOURCE_VER
+        run: |
+          echo ${{ steps.source_tag.outputs.SOURCE_TAG }}
+          echo ${{ steps.source_ver.outputs.SOURCE_VER }}
+          echo "::error Tag does not match version"
+          exit -1
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          registry-url: "https://npm.pkg.github.com"
+          always-auth: true
+          scope: "@mobiusflow"
+
+      - name: balena CLI Action
+        uses: balena-labs-research/community-cli-action@1.0.0
+        with:
+          balena_token: ${{secrets.BALENA_PUSH_TOKEN}}
+          balena_cli_commands: >
+            push MobiusFlow-UP;
+          balena_cli_version: 14.5.12
+
+      - name: Create release
+        env:
+          RELEASE_TYPE: ${{ contains(steps.source_tag.outputs.SOURCE_TAG, '-') }}
+          RELEASE_TAG: ${{ steps.source_tag.outputs.SOURCE_TAG }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MOBIUS_ACTION_TOKEN }}
+          script: |
+            try {
+              await github.rest.repos.createRelease({
+                draft: false,
+                generate_release_notes: true,
+                name: process.env.RELEASE_TAG,
+                owner: context.repo.owner,
+                prerelease: process.env.RELEASE_TYPE === 'true',
+                repo: context.repo.repo,
+                tag_name: process.env.RELEASE_TAG,
+              });
+            } catch (error) {
+              core.setFailed(error.message);
+            }

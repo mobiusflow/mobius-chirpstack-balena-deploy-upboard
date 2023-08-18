@@ -1,0 +1,59 @@
+name: MobiusFlow®
+type: sw.application
+description: >-
+  MobiusFlow® - Advanced middleware for smart buildings, industry, and the Internet of Things.
+post-provisioning: >-
+  ## About
+
+  MobiusFlow® is a scalable, device and protocol agnostic IoT system that can enable an increase 
+  in global efficiencies, reduce environmental impact and waste, whilst connecting millions of devices 
+  via numerous ecosystems, across multiple locations, to be analysed and acted upon remotely based on 
+  actual real-time data.
+
+  A huge range of sensors can be connected to MobiusFlow® to transmit the relevant data to multiple 
+  sources for analysis and actions based on agreed parameters for each device, environment or combined 
+  with third party data such as local weather stations to adjust systems accordingly.
+
+  Visit https://www.mobiusflow.com for more information, training, and documentation.
+
+  ## Licensing
+
+  In order to use MobiusFlow® you must obtain a license code. You can contact us at https://www.mobiusflow.com/contact-us
+  to request a code. 
+
+  ## Setting up Your Device
+
+  After deploying MobiusFlow® to your device, override the following device variables:
+
+  - MOBIUS_HUB_ID: 000001 (the MobiusFlow® hub ID for this device)
+
+  - MOBIUS_LICENCE = <replace with your licence code>
+
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: "https://github.com/mobiusflow/mobius-balena-deploy-upboard"
+  logo:
+    type: blob.asset
+    data:
+      url: >-
+        https://raw.githubusercontent.com/mobiusflow/mobius-balena-deploy-upboard/master/logo.png
+data:
+  applicationEnvironmentVariables:
+    - MOBIUS_HUB_ID: "000001"
+    - MOBIUS_HUB_RESET_PSKS: true
+    - MOBIUS_LOG_SERVICE_STATUS: false
+    - MOBIUS_LOCAL_TIMEOUT: 10000
+    - MOBIUS_ENABLE_CONFIG_UI: true
+    - MOBIUS_LICENCE: <replace with your licence code>
+    - MOBIUS_LICENCE_RENEW: false
+    - MOBIUS_ENGINE_API_PORT: 8443
+    - MOBIUS_ENGINE_API_AUTH_PROVIDER: local
+    - NGINX_UI_CONTAINER: mobius:80
+    - CHIRPSTACK_MQTT_PWD: <replace with your broker password>
+    - INTEGRATION__MQTT__AUTH__GENERIC__PASSWORD: <replace with your broker password>
+  defaultDeviceType: upboard
+  supportedDeviceTypes:
+    - upboard
+version: "1.19.0"
