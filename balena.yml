@@ -33,12 +33,12 @@ assets:
   repository:
     type: blob.asset
     data:
-      url: "https://github.com/mobiusflow/mobius-balena-deploy-upboard"
+      url: "https://github.com/mobiusflow/mobius-chirpstack-balena-deploy-upboard"
   logo:
     type: blob.asset
     data:
       url: >-
-        https://raw.githubusercontent.com/mobiusflow/mobius-balena-deploy-upboard/master/logo.png
+        https://raw.githubusercontent.com/mobiusflow/mobius-chirpstack-balena-deploy-upboard/master/logo.png
 data:
   applicationEnvironmentVariables:
     - MOBIUS_HUB_ID: "000001"
