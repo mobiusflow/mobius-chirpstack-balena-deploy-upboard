@@ -45,7 +45,7 @@ services:
         max-file: "10"
 
   manage:
-    image: ghcr.io/mobiusflow/balena_up_manage:1.19.0
+    image: ghcr.io/mobiusflow/balena_up_manage:1.19.1
     privileged: true
     network_mode: host
     restart: always

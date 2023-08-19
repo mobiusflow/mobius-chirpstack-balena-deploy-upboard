@@ -46,7 +46,7 @@ jobs:
         with:
           balena_token: ${{secrets.BALENA_PUSH_TOKEN}}
           balena_cli_commands: >
-            push MobiusFlow-UP;
+            push MobiusFlow-Chirpstack-UP;
           balena_cli_version: 14.5.12
 
       - name: Create release
