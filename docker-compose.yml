@@ -10,7 +10,7 @@ volumes:
 
 services:
   mobius:
-    image: ghcr.io/mobiusflow/balena_up_mobiusflow-le:1.19.2_1.19.0
+    image: ghcr.io/mobiusflow/balena_up_mobiusflow-le:1.19.6_1.19.6
     privileged: true
     restart: always
     ports:
@@ -45,7 +45,7 @@ services:
         max-file: "10"
 
   manage:
-    image: ghcr.io/mobiusflow/balena_up_manage:1.19.2
+    image: ghcr.io/mobiusflow/balena_up_manage:1.19.6
     privileged: true
     network_mode: host
     restart: always
